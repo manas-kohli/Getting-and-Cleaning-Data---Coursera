@@ -31,6 +31,7 @@ testdata <- function(){
 	for (i in 3:counter){
 		propertest <- cbind(propertest, as.numeric(unlist(propertestdata[i])))
 	}
+
 	propertest <- cbind(propertestdata[2], propertest)
 	propertest <- cbind(propertestdata[1], propertest)
 	propertest[3] <- NULL
@@ -50,7 +51,7 @@ testdata <- function(){
 	propertest <- cbind(propertest, tempmean)
 	colnames(propertest)[ncol(propertest)] <- "MeanSubject"
 	finalnumber <- nrow(propertest) - 2
-	tempmean <- colMeans(propertest[3:81])
+	tempmean <- colMeans(propertest[,3:finalnumber])
 	tempmean <- c(NA, NA, tempmean)
 	propertest <- rbind(propertest, tempmean)
 	rownames(propertest)[nrow(propertest)] <- "MeanVariable"
@@ -110,16 +111,54 @@ traindata <- function(){
  	numericstd <- grep("std", names(propertrain))
  	numericsubset <- c(1,2,numericmean,numericstd)
 	propertrain <- propertrain[,numericsubset]
-	finalnumber <- ncol(propertrain) - 2
-	tempmean <- rowMeans(propertrain[,3:finalnumber])
-	propertrain <- cbind(propertrain, tempmean)
-	colnames(propertrain)[ncol(propertrain)] <- "MeanSubject"
-	finalnumber <- nrow(propertrain) - 2
-	tempmean <- colMeans(propertrain[3:81])
-	tempmean <- c(NA, NA, tempmean)
-	propertest <- rbind(propertrain, tempmean)
-	rownames(propertrain)[nrow(propertrain)] <- "MeanVariable"
-
+	tempproper <- data.frame(nrow = 98)
+	uniqueSubjects = unique(traindata)[,1]
+	for (i in 1:c(1,3,5,6,7,8,11,14,15,16,17,19,21,22,23,25,26,27,28,29,30)){
+		tmp1 <- subset(propertrain, SubjectId == i & activity == "WALKING", drop = FALSE)
+		tmp2 <- subset(propertrain, SubjectId == i & activity == "WALKING_UPSTAIRS", drop = FALSE)
+		tmp3 <- subset(propertrain, SubjectId == i & activity == "WALKING_DOWNSTAIRS", drop = FALSE)
+		tmp4 <- subset(propertrain, SubjectId == i & activity == "LAYING", drop = FALSE)
+		tmp5 <- subset(propertrain, SubjectId == i & activity == "SITTING", drop = FALSE)
+		tmp6 <- subset(propertrain, SubjectId == i & activity == "STANDING", drop = FALSE)
+		tmp1num <- data.frame(nrow = nrow(tmp1))
+		tmp2num <- data.frame(nrow = nrow(tmp2))
+		tmp3num <- data.frame(nrow = nrow(tmp3))
+		tmp4num <- data.frame(nrow = nrow(tmp4))
+		tmp5num <- data.frame(nrow = nrow(tmp5))
+		tmp6num <- data.frame(nrow = nrow(tmp6))
+		for (i in 3:ncol(tmp1)){
+			tmp1num <- cbind(tmp1num, as.numeric(as.character(unlist(tmp1[,i]))))
+		}
+		for (i in 3:ncol(tmp2)){
+			tmp2num <- cbind(tmp2num, as.numeric(as.character(unlist(tmp2[,i]))))
+		}
+		for (i in 3:ncol(tmp3)){
+			tmp3num <- cbind(tmp3num, as.numeric(as.character(unlist(tmp3[,i]))))
+		}
+		for (i in 3:ncol(tmp4)){
+			tmp4num <- cbind(tmp4num, as.numeric(as.character(unlist(tmp4[,i]))))
+		}
+		for (i in 3:ncol(tmp5)){
+			tmp5num <- cbind(tmp5num, as.numeric(as.character(unlist(tmp5[,i]))))
+		}
+		for (i in 3:ncol(tmp6)){
+			tmp6num <- cbind(tmp6num, as.numeric(as.character(unlist(tmp6[,i]))))
+		}
+		
+		tmp1means <- colMeans(tmp1num) 
+		tmp2means <- colMeans(tmp2num)
+		tmp3means <- colMeans(tmp3num)
+		tmp4means <- colMeans(tmp4num)
+		tmp5means <- colMeans(tmp5num)
+		tmp6means <- colMeans(tmp6num)	
+		tempproper <- rbind(tempproper, tmp1means)
+		tempproper <- rbind(tempproper, tmp2means)
+ 		tempproper <- rbind(tempproper, tmp3means)
+		tempproper <- rbind(tempproper, tmp4means)
+		tempproper <- rbind(tempproper, tmp5means)
+		tempproper <- rbind(tempproper, tmp6means)
+	}
+	colnames(tempproper) <- colnames(propertrain)[3:81]
 	return (propertrain)
 }
 
